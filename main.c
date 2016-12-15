@@ -52,16 +52,17 @@
 #include <keyboard/keyboard.h>
 #include <lcd/display.h>
 #include <limits.h>
+#include <string.h>
 
 #define DISPLAY_DELAY 2     // delay is needed to display numbers higher than 9
-#define BUFFER_SIZE 128     // buffer for timestamps
-#define COUNT_TIME 10       // pariod of time
+#define BUFFER_SIZE 850     // buffer for timestamps
+#define COUNT_TIME 60       // period of time
 
 char last_ch;                 // naposledy precteny znak
 int char_cnt = 0;             // all typed characters
-int timer = 11;               // counting from time from start
-int hits[BUFFER_SIZE] = {0};  // hits time stamps
-int hit_index = 0;            // index determines where are timestamps written
+unsigned short timer = 61;               // counting from time from start
+unsigned short hits[BUFFER_SIZE] = {0};  // hits time stamps
+unsigned short hit_index = 0;            // index determines where are timestamps written
 short display_overall = 0;    // boolean switch between overall hits and hits/period of time
 int nums[10]= {               // numbers on secondary 7 segment display
   0xFC, //0 0110 0000
@@ -156,6 +157,7 @@ int keyboard_idle()
       {
         LCD_clear();
         char_cnt = 0;
+        memset(&hits[0], 0, sizeof(hits));
       }
       else if (ch == '*') // change between showing overall
       {
@@ -201,9 +203,9 @@ void init_timer(){
 */
 interrupt (TIMERA0_VECTOR) Timer_A (void){
   timer++;
-  if (timer == INT_MAX) // just in case our application will be running for years
+  if (timer == USHRT_MAX) // just in case our application will be running for years
   {
-    timer = 11;
+    timer = 61;
   }
   return;
 }
